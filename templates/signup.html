@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-errors {
+            color: red;
+        }   
+        .messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        .messages li {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+        <h2>Sign Up</h2>
+        <form method="POST" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label><br />
+                <input type="text" name="username" id="id_username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password</label><br />
+                <input type="password" name="password" id="id_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="id_confirm_password">Confirm Password</label><br />
+                <input type="password" name="confirm_password" id="id_confirm_password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email</label><br />
+                <input type="email" name="email" id="id_email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="id_first_name">Full Name</label><br />
+                <input type="text" name="full_name" id="id_full_name" class="form-control">
+            </div>
+            
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+            <br>    
+            
+            <button type="submit">Sign Up</button>
+        </form>
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div style="margin: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                <p><a href="{% url 'Home' %}">Back to Home</a></p>
+                <p><a href="{% url 'BlogPostList' %}">View Blog Posts</a></p>
+        </div>
+        <br>
+
+    </div>
+</body>
+</html>

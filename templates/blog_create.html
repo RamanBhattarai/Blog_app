@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Create Blog Post
+{% endblock %}
+
+{% block content %}
+
+<h2 style="margin-bottom: 25px;">Create a New Blog Post</h2>
+
+<!-- Success or error message -->
+{% if message %}
+  <div style="background-color: #d4edda; color: #155724; padding: 12px; margin-bottom: 20px; border-radius: 6px;">
+    {{ message }}
+  </div>
+{% endif %}
+
+{% if form.errors %}
+  <div style="background-color: #f8d7da; color: #721c24; padding: 12px; margin-bottom: 20px; border-radius: 6px;">
+    {% for field in form %}
+      {% for error in field.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" style="max-width: 700px;">
+  {% csrf_token %}
+
+  <div style="margin-bottom: 20px;">
+    <label for="id_title" style="font-weight: bold;">Title</label><br>
+    <input
+      type="text"
+      name="title"
+      id="id_title"
+      class="form-control"
+      required
+      style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
+    />
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <label for="id_content" style="font-weight: bold;">Content</label><br>
+    <textarea
+      name="content"
+      id="id_content"
+      rows="8"
+      required
+      style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
+    ></textarea>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <label for="id_image" style="font-weight: bold;">Image</label><br>
+    <input
+      type="file"
+      name="image"
+      id="id_image"
+      style="padding: 8px;"
+      aria-label="Image upload"
+      onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])"
+    />
+    <br><br>
+    <img id="preview" src="#" alt="Image Preview" style="max-width: 200px; display: none;" onload="this.style.display='block'" />
+  </div>
+
+  <button type="submit" class="btn-primary">Create Post</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Blog Posts
+{% endblock %}
+
+{% block content %}
+<!-- Search Bar -->
+<form method="get" action="{% url 'BlogPostList' %}" style="max-width: 1000px; margin-bottom: 20px;">
+    <div style="position: relative;">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Search blog posts..." 
+            value="{{ request.GET.q }}" 
+            style="
+                width: 100%;
+                padding: 10px 45px 10px 12px;
+                border: 1px solid #ccc;
+                border-radius: 25px;
+                outline: none;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            "
+        >
+        <button 
+            type="submit" 
+            style="
+                position: absolute;
+                right: 8px;
+                top: 40%;
+                transform: translateY(-50%);
+                padding: 6px 12px;
+                border: none;
+                background-color: #007bff;
+                color: white;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+            "
+        >Search</button>
+    </div>
+</form>
+
+<!-- Header -->
+{% if request.GET.q %}
+    <h2>Search Results for "{{ request.GET.q }}"</h2>
+    <!-- Post List -->
+    {% if posts %}
+        <ul>
+            {% for post in posts %}
+            <li style="margin-bottom: 20px;">
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.content|truncatewords:40 }}</p>
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 200px; max-height: 200px;">
+                {% endif %}
+                <a href="{% url 'BlogPostDetail' post.id %}">Read more</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if posts.has_previous %}
+                <a href="?page={{ posts.previous_page_number }}&q={{ request.GET.q }}">Previous</a>
+            {% endif %}
+            <span>Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+            {% if posts.has_next %}
+                <a href="?page={{ posts.next_page_number }}&q={{ request.GET.q }}">Next</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No blog posts found for "{{ request.GET.q }}".</p>
+    {% endif %}
+    
+{% else %}
+    <h2>All Blog Posts</h2>
+
+    <!-- Post List -->
+    {% if posts %}
+        <ul>
+            {% for post in posts %}
+            <li style="margin-bottom: 20px;">
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.content|truncatewords:40 }}</p>
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" style="max-width: 200px; max-height: 200px;">
+                {% endif %}
+                <a href="{% url 'BlogPostDetail' post.id %}">Read more</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if posts.has_previous %}
+                <a href="?page={{ posts.previous_page_number }}&q={{ request.GET.q }}">Previous</a>
+            {% endif %}
+            <span>Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+            {% if posts.has_next %}
+                <a href="?page={{ posts.next_page_number }}&q={{ request.GET.q }}">Next</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No blog posts found.</p>
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title_content %}
+Home
+{% endblock %}
+
+{% block content %}
+
+<!-- Search Bar -->
+<form method="get" action="{% url 'Home' %}" style="max-width: 1000px; margin-bottom: 30px;">
+    <div style="position: relative;">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Search blog posts..." 
+            value="{{ request.GET.q }}" 
+            style="
+                width: 100%;
+                padding: 12px 48px 12px 16px;
+                border: 1px solid #ccc;
+                border-radius: 25px;
+                outline: none;
+                font-size: 16px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            "
+        >
+        <button 
+            type="submit" 
+            style="
+                position: absolute;
+                right: 10px;
+                top: 40%;
+                transform: translateY(-50%);
+                padding: 6px 16px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 14px;
+            "
+        >Search</button>
+    </div>
+</form>
+
+<!-- Post Section -->
+<h3 style="margin-bottom: 20px;">
+    {% if query %}
+        Search Results for "{{ query }}"
+    {% else %}
+        Recent Posts
+    {% endif %}
+</h3>
+
+<ul style="list-style: none; padding-left: 0;">
+    {% for post in posts %}
+        <li style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+            <a href="{% url 'BlogPostDetail' post.pk %}" style="font-size: 20px; color: #007bff; font-weight: bold;">
+                {{ post.title }}
+            </a>
+            <p style="margin: 8px 0; color: #444;">{{ post.content|truncatewords:25 }}</p>
+            <small style="color: #666;">by {{ post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
+        </li>
+    {% empty %}
+        <li>No blog posts found.</li>
+    {% endfor %}
+</ul>
+
+<!-- Pagination -->
+<div class="pagination" style="margin-top: 30px; text-align: center;">
+    {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn-secondary">Previous</a>
+    {% endif %}
+    <span style="margin: 0 12px;">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+    {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="btn-secondary">Next</a>
+    {% endif %}
+</div>
+
+{% endblock %}
