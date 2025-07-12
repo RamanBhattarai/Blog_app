@@ -17,6 +17,7 @@ Update Blog Post
   <div class="form-group" style="margin-bottom: 20px">
     <label for="{{ form.title.id_for_label }}">Title</label><br />
     {{ form.title }}
+    <button type="button" onclick="generateTitle()" style="padding: 10px 15px;">Generate Title</button>
   </div>
 
   <div class="form-group" style="margin-bottom: 20px">
@@ -37,3 +38,39 @@ Update Blog Post
   <button type="submit">Update Post</button>
 </form>
 {% endblock %}
+
+
+{% block extra_js %}
+<script>
+  function generateTitle() {
+    const content = document.getElementById("id_content").value;
+
+    if (!content.trim()) {
+      alert("Please enter some content first.");
+      return;
+    }
+
+    fetch("/generate-title/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({ content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.title) {
+        document.getElementById("id_title").value = data.title;
+      } else {
+        alert("Title generation failed.");
+      }
+    })
+    .catch(error => {
+      console.error("Error generating title:", error);
+      alert("Something went wrong.");
+    });
+  }
+</script>
+
+{% endblock  %}

@@ -32,27 +32,31 @@ Create Blog Post
   {% csrf_token %}
 
   <div style="margin-bottom: 20px;">
-    <label for="id_title" style="font-weight: bold;">Title</label><br>
+  <label for="id_title" style="font-weight: bold;">Title</label><br>
+  <div style="display: flex; gap: 10px;">
     <input
       type="text"
       name="title"
       id="id_title"
       class="form-control"
       required
-      style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
+      style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
     />
+    <button type="button" onclick="generateTitle()" style="padding: 10px 15px;">Generate Title</button>
   </div>
+</div>
 
-  <div style="margin-bottom: 20px;">
-    <label for="id_content" style="font-weight: bold;">Content</label><br>
-    <textarea
-      name="content"
-      id="id_content"
-      rows="8"
-      required
-      style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
-    ></textarea>
-  </div>
+<!-- Content -->
+<div style="margin-bottom: 20px;">
+  <label for="id_content" style="font-weight: bold;">Content</label><br>
+  <textarea
+    name="content"
+    id="id_content"
+    rows="8"
+    required
+    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"
+  ></textarea>
+</div>
 
   <div style="margin-bottom: 20px;">
     <label for="id_image" style="font-weight: bold;">Image</label><br>
@@ -72,3 +76,39 @@ Create Blog Post
 </form>
 
 {% endblock %}
+
+
+{% block extra_js %}
+<script>
+  function generateTitle() {
+    const content = document.getElementById("id_content").value;
+
+    if (!content.trim()) {
+      alert("Please enter some content first.");
+      return;
+    }
+
+    fetch("/generate-title/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({ content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.title) {
+        document.getElementById("id_title").value = data.title;
+      } else {
+        alert("Title generation failed.");
+      }
+    })
+    .catch(error => {
+      console.error("Error generating title:", error);
+      alert("Something went wrong.");
+    });
+  }
+</script>
+
+{% endblock  %}

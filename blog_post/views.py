@@ -8,6 +8,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+import json, openai, os
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from openai import OpenAI
 
 
 def home(request):
@@ -76,6 +81,37 @@ def blog_post_create(request):
         form = BlogPostForm()
 
     return render(request, 'blog_create.html', {'form': form})
+
+
+@csrf_exempt
+@require_POST
+def generate_title(request):
+    try:
+        data = json.loads(request.body)
+        content = data.get("content", "")
+
+        if not content.strip():
+            return JsonResponse({"error": "Empty content"}, status=400)
+
+        # Use the new ChatCompletion API
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that generates concise and catchy blog titles."},
+                {"role": "user", "content": f"Generate a blog title for the following content:\n\n{content}"}
+            ],
+            temperature=0.7,
+            max_tokens=20
+        )
+
+        title = response.choices[0].message.content.strip()
+        return JsonResponse({"title": title})
+
+    except Exception as e:
+        print("Error in generate_title:", str(e))
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 @login_required(login_url='login')
